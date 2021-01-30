@@ -1,0 +1,52 @@
+version: '3'
+services:
+
+  #PHP Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: digitalocean.com/php
+    container_name: app
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /app
+    volumes:
+      - ./:/app
+    networks: &networks
+      - default
+
+  #Nginx Service
+  nginx:
+    image: nginx:alpine
+    container_name: webserver
+    ports:
+      - "8888:80"
+      - "443:443"
+    volumes:
+      - ./public:/app/public
+      - ./config/shop-crm.conf/:/etc/nginx/conf.d/shop-crm.conf
+    networks: *networks
+
+  mysqldb:
+    image: mariadb:10.1
+    container_name: mysqldb
+    command: --max_allowed_packet=2G --character_set_server=utf8 --collation_server=utf8_general_ci
+    networks: *networks
+    environment:
+      MYSQL_DATABASE: shop-crm
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: root
+    ports:
+      - "3366:3306"
+    volumes:
+      - ./db_folders/mysql:/var/lib/mysql
+      - ./userfolder/mysql:/etc/mysql/conf.d
+
+#Docker Networks
+networks:
+  default:
+    name: shop
+    external: true
