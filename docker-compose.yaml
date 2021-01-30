@@ -19,8 +19,7 @@ services:
 
   #Nginx Service
   nginx:
-    image: nginx:alpine
-    container_name: webserver
+    image: nginx:latest
     ports:
       - "8888:80"
       - "443:443"
