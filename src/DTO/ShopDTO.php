@@ -22,34 +22,42 @@ class ShopDTO extends BaseDTO
 
     /**
      * @param string|null $id
+     * @return $this
      */
-    public function setId(?string $id): void
+    public function setId(?string $id): self
     {
         $this->id = $id;
+        return $this;
     }
 
     /**
      * @param array $settings
+     * @return $this
      */
-    public function setSettings(array $settings): void
+    public function setSettings(array $settings): self
     {
         $this->settings = $settings;
+        return $this;
     }
 
     /**
      * @param string|null $title
+     * @return $this
      */
-    public function setTitle(?string $title): void
+    public function setTitle(?string $title): self
     {
         $this->title = $title;
+        return $this;
     }
 
     /**
      * @param string|null $uniqueId
+     * @return $this
      */
-    public function setUniqueId(?string $uniqueId): void
+    public function setUniqueId(?string $uniqueId): self
     {
         $this->uniqueId = $uniqueId;
+        return $this;
     }
 
     /**

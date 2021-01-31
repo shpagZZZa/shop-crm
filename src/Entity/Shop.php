@@ -54,6 +54,16 @@ class Shop
         return $this->id;
     }
 
+    /**
+     * @param $id
+     * @return $this
+     */
+    public function setId($id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
     public function getTitle(): ?string
     {
         return $this->title;
@@ -83,7 +93,7 @@ class Shop
         return $this->backend_url;
     }
 
-    public function setBackendUrl(string $backend_url): self
+    public function setBackendUrl(?string $backend_url): self
     {
         $this->backend_url = $backend_url;
 

@@ -2,11 +2,10 @@
 
 namespace App\Controller;
 
+use App\CRUD\ShopCRUD;
 use App\DTO\ShopDTO;
-use App\Entity\Shop;
-use App\Repository\ShopRepository;
 use App\RequestDTOConverter\RequestDTOConverterInterface;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\ShopService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,36 +17,35 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ShopController extends AbstractController
 {
-    private ShopRepository $shopRepository;
-    private EntityManagerInterface $em;
     private RequestDTOConverterInterface $converter;
+    private ShopService $shopService;
+    private ShopCRUD $shopCRUD;
 
     /**
      * ShopController constructor.
-     * @param ShopRepository $shopRepository
-     * @param EntityManagerInterface $entityManager
      * @param RequestDTOConverterInterface $converter
+     * @param ShopService $shopService
      */
     public function __construct(
-        ShopRepository $shopRepository,
-        EntityManagerInterface $entityManager,
-        RequestDTOConverterInterface $converter
+        RequestDTOConverterInterface $converter,
+        ShopService $shopService
     )
     {
-        $this->shopRepository = $shopRepository;
-        $this->em = $entityManager;
         $this->converter = $converter;
+        $this->shopService = $shopService;
+        $this->shopCRUD = $shopService->getCRUD();
     }
 
     /**
-     * @Route("/info/{id}", name="info", methods={"GET"})
+     * @Route("/{id}", name="info", methods={"GET"})
      * @param int $id
      * @param Request $request
      * @return JsonResponse
      */
     public function getAction(int $id, Request $request): JsonResponse
     {
-        dd($this->shopRepository->find($id));
+        $shop = $this->shopCRUD->read($id);
+        return new JsonResponse($shop->jsonSerialize(), Response::HTTP_OK);
     }
 
     /**
@@ -58,25 +56,12 @@ class ShopController extends AbstractController
     public function submitAction(Request $request): JsonResponse
     {
         $shopDTO = $this->converter->convert($request, ShopDTO::class);
-        dd($shopDTO);
         if (!$id = $request->query->get('shopId')) {
-            $shop = new Shop();
-            $shop->setUniqueId(uniqid());
+            $shopDTO = $this->shopCRUD->create($shopDTO);
         } else {
-            $shop = $this->shopRepository->find($id);
+            $shopDTO = $this->shopCRUD->update($id, $shopDTO);
         }
 
-        $content = json_decode($request->getContent(), true);
-
-        if (isset($content['title'])) {
-            $shop->setTitle($content['title']);
-        }
-
-        $this->em->persist($shop);
-        $this->em->flush();
-
-
-        dd($shop);
-        return $this->json($request->request->all());
+        return new JsonResponse($shopDTO->jsonSerialize(), Response::HTTP_OK);
     }
 }

@@ -6,14 +6,13 @@ namespace App\DTO;
 
 use JsonSerializable;
 
+/**
+ * Важно называть класс таким образом: название сущности + DTO, например ShopDTO
+ * Class BaseDTO
+ * @package App\DTO
+ */
 abstract class BaseDTO implements JsonSerializable
 {
-    public const DTO_TYPE_CLASS_MAP = [
-        BaseDTO::SHOP_DTO_TYPE => ShopDTO::class
-    ];
-
-    public const SHOP_DTO_TYPE = 'shop_dto_type';
-
     /**
      * @return array
      */

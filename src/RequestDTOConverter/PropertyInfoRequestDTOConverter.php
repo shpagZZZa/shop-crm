@@ -5,25 +5,32 @@ namespace App\RequestDTOConverter;
 
 
 use App\DTO\BaseDTO;
+use App\Service\PropertyCascade;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
-use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
-use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 
 class PropertyInfoRequestDTOConverter implements RequestDTOConverterInterface
 {
-    private PropertyInfoExtractor $propertyInfo;
+    private PropertyCascade $propertyCascade;
 
-    public function __construct()
+    /**
+     * PropertyInfoRequestDTOConverter constructor.
+     * @param PropertyCascade $propertyCascade
+     */
+    public function __construct(PropertyCascade $propertyCascade)
     {
-        $this->propertyInfo = $this->createPropertyExtractor();
+        $this->propertyCascade = $propertyCascade;
     }
 
+    /**
+     * @param Request $request
+     * @param string $dtoNamespace
+     * @return BaseDTO
+     */
     public function convert(Request $request, string $dtoNamespace): BaseDTO
     {
         $result = new $dtoNamespace();
 
-        $properties = $this->propertyInfo->getProperties($dtoNamespace);
+        $properties = $this->propertyCascade->getPropertyExtractor()->getProperties($dtoNamespace);
 
         $content = json_decode($request->getContent(), true);
 
@@ -36,30 +43,5 @@ class PropertyInfoRequestDTOConverter implements RequestDTOConverterInterface
         }
 
         return $result;
-    }
-
-    private function createPropertyExtractor(): PropertyInfoExtractor
-    {
-        $phpDocExtractor = new PhpDocExtractor();
-        $reflectionExtractor = new ReflectionExtractor();
-
-        $listExtractors = [$reflectionExtractor];
-
-        $typeExtractors = [$phpDocExtractor, $reflectionExtractor];
-
-        $descriptionExtractors = [$phpDocExtractor];
-
-        $accessExtractors = [$reflectionExtractor];
-
-        $propertyInitializableExtractors = [$reflectionExtractor];
-
-        return new PropertyInfoExtractor(
-            $listExtractors,
-            $typeExtractors,
-            $descriptionExtractors,
-            $accessExtractors,
-            $propertyInitializableExtractors
-        );
-
     }
 }
