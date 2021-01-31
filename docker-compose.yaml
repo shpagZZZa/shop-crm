@@ -14,8 +14,21 @@ services:
     working_dir: /app
     volumes:
       - ./:/app
+#    depends_on:
+#      - mysqldb
     networks: &networks
       - default
+
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+    - "3366:3306"
+    expose:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
 
   #Nginx Service
   nginx:
@@ -28,21 +41,21 @@ services:
       - ./config/shop-crm.conf/:/etc/nginx/conf.d/shop-crm.conf
     networks: *networks
 
-  mysqldb:
-    image: mariadb:10.1
-    container_name: mysqldb
-    command: --max_allowed_packet=2G --character_set_server=utf8 --collation_server=utf8_general_ci
-    networks: *networks
-    environment:
-      MYSQL_DATABASE: shop-crm
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: user
-      MYSQL_PASSWORD: root
-    ports:
-      - "3366:3306"
-    volumes:
-      - ./db_folders/mysql:/var/lib/mysql
-      - ./userfolder/mysql:/etc/mysql/conf.d
+#  mysqldb:
+#    image: mysql:latest
+#    networks: *networks
+#    environment:
+#      MYSQL_DATABASE: shop-crm
+#      MYSQL_ROOT_PASSWORD: root
+##      MYSQL_USER: user
+##      MYSQL_PASSWORD: root
+#    ports:
+#      - "3306:3306"
+##    expose:
+##      - '3306'
+##    volumes:
+##      - ./db_folders/mysql:/var/lib/mysql
+##      - ./userfolder/mysql:/etc/mysql/conf.d
 
 #Docker Networks
 networks:
