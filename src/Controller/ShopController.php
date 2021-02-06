@@ -45,7 +45,9 @@ class ShopController extends AbstractController
     public function getAction(int $id, Request $request): JsonResponse
     {
         $shop = $this->shopCRUD->read($id);
-        return new JsonResponse($shop->jsonSerialize(), Response::HTTP_OK);
+        return $shop ? new JsonResponse($shop->jsonSerialize(), Response::HTTP_OK) :
+            new JsonResponse('Магазин не найден', Response::HTTP_BAD_REQUEST)
+        ;
     }
 
     /**

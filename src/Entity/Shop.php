@@ -40,7 +40,7 @@ class Shop
     private $unique_id;
 
     /**
-     * @ORM\OneToMany(targetEntity=Category::class, mappedBy="title", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Category::class, mappedBy="shop", orphanRemoval=true)
      */
     private $categories;
 

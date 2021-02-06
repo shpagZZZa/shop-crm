@@ -23,6 +23,11 @@ class Category
      * @ORM\ManyToOne(targetEntity=Shop::class, inversedBy="categories")
      * @ORM\JoinColumn(nullable=false)
      */
+    private $shop;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
     private $title;
 
     /**
@@ -41,10 +46,33 @@ class Category
     private $products;
 
     /**
-     * @ORM\OneToMany(targetEntity=Category::class, mappedBy="childs")
+     * @ORM\ManyToOne (targetEntity=Category::class, inversedBy="childs")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $parent;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Category::class, mappedBy="parent")
+     */
+    private $childs;
+
+    /**
+     * @return mixed
+     */
+    public function getChilds()
+    {
+        return $this->childs;
+    }
+
+    /**
+     * @param $childs
+     * @return $this
+     */
+    public function setChilds($childs): self
+    {
+        $this->childs = $childs;
+        return $this;
+    }
     public function __construct()
     {
         $this->products = new ArrayCollection();
@@ -55,12 +83,30 @@ class Category
         return $this->id;
     }
 
-    public function getTitle(): ?Shop
+    /**
+     * @return mixed
+     */
+    public function getTitle()
     {
         return $this->title;
     }
 
-    public function setTitle(?Shop $title): self
+    /**
+     * @param string $title
+     * @return $this
+     */
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    public function getShop(): ?Shop
+    {
+        return $this->title;
+    }
+
+    public function setShop(?Shop $title): self
     {
         $this->title = $title;
 
